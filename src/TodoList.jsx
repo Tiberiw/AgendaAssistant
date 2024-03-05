@@ -1,54 +1,48 @@
+import { useState } from "react"
+import NewTodoForm from "./NewTodoForm";
+import TodoListContent from "./TodoListContent";
+import DeleteTodoButtons from "./DeleteTodoButtons";
+
 export default function TodoList() {
-    return (
+  const [todos, setTodos] = useState([]);
+
+  function toggleTodo(id, completed) {
+    setTodos( currentTodos => {
+      return currentTodos.map( todo => {
+        if (todo.id === id) {
+          return {...todo, completed};
+        }
+        return todo;
+      })      
+    })
+  }
+
+  function addTodo(title) {
+     setTodos((currentTodos) => {
+          return [...currentTodos, {id: crypto.randomUUID(), title, completed: false}]
+        });
+  }
+
+  function deleteCompletedTodos() {
+    const checkedTodosIds = todos.filter( todo => todo.completed)
+                            .map(todo => todo.id); 
+
+    setTodos( currentTodos => {
+        return currentTodos.filter( todo => !checkedTodosIds.includes(todo.id) )
+    });
+  }
+
+  return (
         <div className="todo-list">
           <div className="todo-header">
             <h2 className="list-title">Work</h2>
-            <p className="task-count">3 tasks remaining</p>
+            <p className="task-count"> Remaining tasks: {todos.length}</p>
           </div>
           <div className="todo-body">
-            <div className="tasks">
-              <div className="task">
-                <input type="checkbox"
-                  id="task-1"
-                />
-                <label htmlFor="task-1">
-                  <span className="custom-checkbox"></span>
-                  build todo list project
-                </label>
-              </div>
-              {/* close task1 */}
-              <div className="task">
-                <input type="checkbox"
-                  id="task-2"
-                />
-                <label htmlFor="task-2">
-                  <span className="custom-checkbox"></span>
-                  build todo list project
-                </label>
-              </div>
-              {/* close task 2 */}
-              <div className="task">
-                <input type="checkbox"
-                  id="task-3"
-                />
-                <label htmlFor="task-3">
-                  <span className="custom-checkbox"></span>
-                  build todo list project
-                </label>
-              </div>
-              {/* close task 3 */}
-            </div>
-            <div className="new-task-creator">
-              <form action="">
-                <input type="text" className="new task" placeholder="new task name" aria-label="new task name"/>
-                <button className="btn create" aria-label="create new task">+</button>
-              </form>
-            </div>
-            <div className="delete-stuff">
-              <button className="btn delete">Clear completed tasks</button>
-              <button className="btn delete">Delete all tasks</button>
-            </div>
+            <TodoListContent todos={todos} toggleTodo={toggleTodo}/>
+            <NewTodoForm onSubmit={addTodo}/>
+            {todos.length !==0 && <DeleteTodoButtons deleteCompletedTodos={deleteCompletedTodos} setTodos={setTodos}/>} 
           </div>
         </div>
-    )
+  )
 }
