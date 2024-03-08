@@ -1,12 +1,21 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import NewTaskForm from './NewTaskForm.jsx'
 import TodoList from './TodoList.jsx'
 import '../styles.css'
 import TaskList from './TaskList.jsx';
 
 export default function App() {
-  const [projects, setProjects] = useState([]);
+  const [projects, setProjects] = useState(() => {
+    const localValue = localStorage.getItem("ITEMS");
+    if (localValue == null) return [];
+    return JSON.parse(localValue);
+  });
   const [clickedProject, setClickedProject] = useState(null);
+
+
+  useEffect(() => {
+    localStorage.setItem("ITEMS", JSON.stringify(projects))
+  }, [projects])
 
 
   function addProject(title) { 
